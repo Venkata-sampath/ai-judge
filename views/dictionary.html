@@ -20,18 +20,54 @@
     </div>
   </nav>
 
-  <!-- Dictionary Lookup -->
+  <!-- Dictionary Lookup Form -->
   <div class="container mt-5">
     <h2 class="text-center mb-4">Legal Dictionary</h2>
     <div class="mb-3">
       <input type="text" id="wordInput" class="form-control" placeholder="Enter a legal term">
     </div>
     <button class="btn btn-primary w-100" onclick="lookupWord()">Look Up</button>
-
-    <div class="mt-4" id="definitionOutput" style="white-space: pre-wrap;"></div>
   </div>
 
+  <!-- Modal -->
+  <div class="modal fade" id="definitionModal" tabindex="-1" aria-labelledby="definitionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="definitionModalLabel">Definition</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="definitionOutput" style="white-space: pre-wrap;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap & Axios -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <script src="/script.js"></script>
+
+  <script>
+    async function lookupWord() {
+      const word = document.getElementById('wordInput').value.trim();
+      if (!word) {
+        alert("Please enter a word.");
+        return;
+      }
+
+      try {
+        const response = await axios.post('/api/define', { word });
+        const definition = response.data.definition || "No definition found.";
+
+        document.getElementById('definitionOutput').textContent = definition;
+
+        const modal = new bootstrap.Modal(document.getElementById('definitionModal'));
+        modal.show();
+      } catch (error) {
+        document.getElementById('definitionOutput').textContent = "Error fetching definition.";
+        const modal = new bootstrap.Modal(document.getElementById('definitionModal'));
+        modal.show();
+      }
+    }
+  </script>
 </body>
 </html>
